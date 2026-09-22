@@ -1,0 +1,62 @@
+<template>
+  <section class={shellClass}>
+    <header class="hp-greeting">
+      <h1 class="hp-greeting__title">{greetingTitle}</h1>
+      <p class="hp-greeting__subtitle">{greetingSubtitle}</p>
+    </header>
+
+    <div class="hp-grid">
+      <div class="hp-main">
+        <div class="hp-kpi-slot">
+          <!--<c-kpi-placeholder></c-kpi-placeholder>-->
+          <c-kpi-section></c-kpi-section>
+        </div>
+        <section class="hp-section">
+          <div class="hp-section__head">
+            <h2 class="hp-section__title">Today's High-Priority To-Do's</h2>
+            <div class="hp-section__actions">
+              <lightning-button-icon
+                data-id="focus"
+                icon-name={focusIcon}
+                alternative-text={focusTitle}
+                title={focusTitle}
+                variant="border-filled"
+                onclick={toggleFocus}
+              ></lightning-button-icon>
+              <lightning-button-icon
+                data-id="refresh"
+                icon-name="utility:refresh"
+                alternative-text="Refresh to-dos"
+                title="Refresh"
+                variant="border-filled"
+                onclick={handleRefresh}
+              ></lightning-button-icon>
+            </div>
+          </div>
+          
+          <c-priority-to-do-list
+            include-delegated={includeDelegated}
+            enable-grouping={enableGrouping}
+            oncountchange={handleCountChange}
+          ></c-priority-to-do-list>
+          
+        </section>
+      </div>
+
+      <aside class="hp-sidebar">
+        <c-homepage-my-meetings
+          max-visible-meetings={maxVisibleMeetings}
+          manage-meetings-url={manageMeetingsUrl}
+        ></c-homepage-my-meetings>
+
+        <c-coming-soon-teaser
+          heading="On My Radar"
+          icon-name="utility:watchlist"
+          accent="radar"
+          tagline="The approvals and account changes worth a glance."
+          features={radarFeatures}
+        ></c-coming-soon-teaser>
+      </aside>
+    </div>
+  </section>
+</template>

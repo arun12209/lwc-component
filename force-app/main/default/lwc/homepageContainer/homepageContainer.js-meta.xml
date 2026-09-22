@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__HomePage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig
+      targets="lightning__HomePage,lightning__AppPage,lightning__RecordPage"
+    >
+            <property
+        name="includeDelegated"
+        type="Boolean"
+        default="false"
+        label="Include delegated items"
+        description="Pilot default is off; enable only when delegation UI/operations are launched."
+      />
+            <property
+        name="recordType"
+        type="String"
+        default="Research_Sales"
+        label="Team record type"
+        description="Team this page instance serves (Research_Sales, Services, Conferences, ...); used for engagement analytics."
+      />
+            <property
+        name="enableGrouping"
+        type="Boolean"
+        default="false"
+        label="Group similar to-dos"
+        description="Off for the pilot. Flip on to roll up similar to-dos into expandable grouped rows (logic and components remain in place)."
+      />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

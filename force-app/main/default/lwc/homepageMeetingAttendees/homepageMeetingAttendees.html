@@ -1,0 +1,81 @@
+<template>
+  <div class="attendees-container">
+    <template lwc:if={hasAttendees}>
+      <!-- Primary / Known names list -->
+      <div class="attendees-chips">
+        <template for:each={visibleAttendees} for:item="attendee">
+          <span key={attendee.id} class="attendee-chip" title={attendee.name}>
+            <lightning-icon
+              icon-name={attendeeIcon}
+              size="x-small"
+              class="attendee-icon"
+            ></lightning-icon>
+            <span class="attendee-name">{attendee.name}</span>
+          </span>
+        </template>
+
+        <template lwc:if={hasOverflow}>
+          <button
+            type="button"
+            class="overflow-pill"
+            aria-expanded={isPopoverOpen}
+            aria-label={overflowAriaLabel}
+            onclick={togglePopover}
+          >
+            +{overflowCount}
+          </button>
+        </template>
+      </div>
+
+      <!-- Accessible Inline Disclosure Popover -->
+      <template lwc:if={isPopoverOpen}>
+        <section
+          class="slds-popover slds-popover_walkthrough slds-nubbin_bottom-left attendees-popover"
+          role="dialog"
+          aria-label="Meeting Attendees"
+        >
+          <div class="slds-popover__body">
+            <div class="popover-header">
+              <span class="popover-title">Meeting Attendees ({totalAttendeeCount})</span>
+              <button
+                type="button"
+                class="popover-close-btn"
+                aria-label="Close attendees list"
+                onclick={closePopover}
+              >
+                ✕
+              </button>
+            </div>
+            <ul class="popover-list">
+              <template for:each={attendeeItems} for:item="person">
+                <li key={person.id} class="popover-item">
+                  <span class="person-name">{person.name}</span>
+                  <span class="person-role">{person.type}</span>
+                </li>
+              </template>
+            </ul>
+          </div>
+        </section>
+      </template>
+    </template>
+
+    <!-- Fallback when full attendee list is unavailable -->
+    <template lwc:elseif={isFullListUnavailable}>
+      <div class="attendees-fallback">
+        <template lwc:if={primaryPersonName}>
+          <span class="primary-person" title={primaryPersonName}>
+            <span class="fallback-role">{primaryPersonLabel}:</span>
+            <span class="fallback-name">{primaryPersonName}</span>
+          </span>
+        </template>
+        <span class="fallback-notice" title="Full attendee list is not exposed via GraphQL in this org">
+          Full attendee list unavailable
+        </span>
+      </div>
+    </template>
+
+    <template lwc:else>
+      <span class="no-attendees">No attendees recorded</span>
+    </template>
+  </div>
+</template>

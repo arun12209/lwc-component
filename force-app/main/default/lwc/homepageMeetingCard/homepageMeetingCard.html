@@ -1,0 +1,93 @@
+<template>
+  <article class={cardClass} aria-label={cardAriaLabel}>
+    <!-- Top Row: Time & Temporal Badge & Rescheduling Badge -->
+    <div class="card-meta">
+      <div class="time-group">
+        <span class="meeting-time">{temporalState.timeDisplay}</span>
+        <template lwc:if={temporalState.badgeLabel}>
+          <span class={temporalBadgeClass}>{temporalState.badgeLabel}</span>
+        </template>
+      </div>
+
+      <template lwc:if={isRescheduling}>
+        <span class="status-badge status-badge_rescheduling">Rescheduling</span>
+      </template>
+    </div>
+
+    <!-- Subject (Event Link) -->
+    <div class="card-subject">
+      <a
+        href={eventRecordUrl}
+        class="subject-link"
+        title={meeting.subject}
+        onclick={handleEventClick}
+      >
+        {meeting.subject}
+      </a>
+    </div>
+
+    <!-- Linked Opportunity -->
+    <div class="card-oppty">
+      <lightning-icon
+        icon-name="standard:opportunity"
+        size="x-small"
+        class="oppty-icon"
+      ></lightning-icon>
+      <a
+        href={opptyRecordUrl}
+        class="oppty-link"
+        title={opportunityName}
+        onclick={handleOpptyClick}
+      >
+        {opportunityName}
+      </a>
+    </div>
+
+    <!-- Category & Topic -->
+    <div class="card-details">
+      <div class="detail-item">
+        <span class="detail-label">Category:</span>
+        <span class="detail-value">{categoryLabel}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Topic:</span>
+        <span class="detail-value">{topicLabel}</span>
+      </div>
+    </div>
+
+    <!-- Attendees -->
+    <div class="card-attendees">
+      <c-homepage-meeting-attendees
+        attendees={meeting.attendees}
+        primary-person={meeting.primaryPerson}
+        is-compact={isCompact}
+      ></c-homepage-meeting-attendees>
+    </div>
+
+    <!-- Action Row: Open Impact Assessment -->
+    <div class="card-actions">
+      <template lwc:if={isImpactAssessmentConfigured}>
+        <a
+          href={impactAssessmentUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="impact-btn impact-btn_enabled"
+          aria-label="Open Impact Assessment (opens in new tab)"
+        >
+          Open Impact Assessment
+        </a>
+      </template>
+      <template lwc:else>
+        <button
+          type="button"
+          class="impact-btn impact-btn_disabled"
+          disabled
+          aria-label="Open Impact Assessment (Setup pending)"
+        >
+          Open Impact Assessment
+        </button>
+        <span class="setup-pending-label">Setup pending</span>
+      </template>
+    </div>
+  </article>
+</template>

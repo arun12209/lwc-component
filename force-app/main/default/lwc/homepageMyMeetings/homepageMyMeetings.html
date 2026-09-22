@@ -1,0 +1,137 @@
+<template>
+  <div class="my-meetings-container">
+    <!-- Header Section -->
+    <header class="meetings-header">
+      <div class="header-main">
+        <h2 class="meetings-title">My Meetings</h2>
+        <div class="header-actions">
+          <!-- Manage Meetings Button -->
+          <template lwc:if={manageMeetingsUrl}>
+            <a
+              href={manageMeetingsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="manage-meetings-btn manage-meetings-btn_enabled"
+              aria-label="Manage Meetings dashboard (opens in new tab)"
+            >
+              Manage Meetings
+            </a>
+          </template>
+          <template lwc:else>
+            <button
+              type="button"
+              class="manage-meetings-btn manage-meetings-btn_disabled"
+              disabled
+              title="Dashboard link not configured"
+            >
+              Manage Meetings
+            </button>
+          </template>
+
+          <!-- Refresh Button -->
+          <lightning-button-icon
+            icon-name="utility:refresh"
+            alternative-text="Refresh meetings"
+            title="Refresh meetings"
+            variant="border-filled"
+            size="small"
+            class="refresh-icon-btn"
+            onclick={handleRefresh}
+          ></lightning-button-icon>
+        </div>
+      </div>
+
+      <!-- Date & Timezone Line -->
+      <div class="header-date-line">
+        <span class="date-text">{currentDateDisplay}</span>
+        <span class="tz-divider">·</span>
+        <span class="tz-text">{displayZone}</span>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="meetings-tabs" role="tablist" aria-label="Meeting views">
+      <button
+        type="button"
+        class={todayTabClass}
+        role="tab"
+        aria-selected={isTodayTab}
+        data-tab="today"
+        onclick={handleTabChange}
+      >
+        Today
+      </button>
+      <button
+        type="button"
+        class={tomorrowTabClass}
+        role="tab"
+        aria-selected={isTomorrowTab}
+        data-tab="tomorrow"
+        onclick={handleTabChange}
+      >
+        Tomorrow
+      </button>
+      <button
+        type="button"
+        class={calendarTabClass}
+        role="tab"
+        aria-selected={isCalendarTab}
+        data-tab="calendar"
+        onclick={handleTabChange}
+      >
+        Calendar
+      </button>
+    </div>
+
+    <!-- Active Tab Body -->
+    <div class="meetings-body">
+      <template lwc:if={isTodayTab}>
+        <c-homepage-meeting-agenda
+          meetings={todayMeetings}
+          date-key="today"
+          display-zone={displayZone}
+          max-visible-meetings={maxVisibleMeetings}
+          completeness={completeness}
+          total-count-or-null={todayMeetings.length}
+          onviewall={handleOpenViewAll}
+          onopencalendar={handleOpenCalendarTab}
+        ></c-homepage-meeting-agenda>
+      </template>
+
+      <template lwc:elseif={isTomorrowTab}>
+        <c-homepage-meeting-agenda
+          meetings={tomorrowMeetings}
+          date-key="tomorrow"
+          display-zone={displayZone}
+          max-visible-meetings={maxVisibleMeetings}
+          completeness={completeness}
+          total-count-or-null={tomorrowMeetings.length}
+          onviewall={handleOpenViewAll}
+          onopencalendar={handleOpenCalendarTab}
+        ></c-homepage-meeting-agenda>
+      </template>
+
+      <template lwc:elseif={isCalendarTab}>
+        <c-homepage-meeting-calendar
+          meetings={allMeetings}
+          display-zone={displayZone}
+          completeness={completeness}
+          onexpandcalendar={handleExpandCalendar}
+          onviewall={handleOpenViewAll}
+        ></c-homepage-meeting-calendar>
+      </template>
+    </div>
+
+    <!-- Headless Data Provider -->
+    <template lwc:if={isProviderMounted}>
+      <c-homepage-meetings-data
+        record-type-ids={recordTypeIds}
+        status-values={statusValues}
+        range-start-utc-iso={rangeStartUtcIso}
+        range-end-utc-iso={rangeEndUtcIso}
+        enabled={isProviderEnabled}
+        ondatachange={handleDataChange}
+      ></c-homepage-meetings-data>
+    </template>
+  </div>
+</template>

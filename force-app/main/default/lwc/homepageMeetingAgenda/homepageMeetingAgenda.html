@@ -1,0 +1,70 @@
+<template>
+  <div class="agenda-container">
+    <!-- Loading Skeleton -->
+    <template lwc:if={isLoading}>
+      <div class="skeleton-list" aria-busy="true" aria-label="Loading meetings">
+        <template for:each={skeletonItems} for:item="item">
+          <div key={item} class="skeleton-card">
+            <div class="skeleton-line skeleton-line_short"></div>
+            <div class="skeleton-line skeleton-line_medium"></div>
+            <div class="skeleton-line skeleton-line_full"></div>
+            <div class="skeleton-btn"></div>
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <!-- Content State -->
+    <template lwc:else>
+      <template lwc:if={hasMeetings}>
+        <div class="meetings-list" role="list">
+          <template for:each={visibleMeetings} for:item="meeting">
+            <div key={meeting.key} class="meeting-list-item" role="listitem">
+              <c-homepage-meeting-card
+                meeting={meeting}
+                display-zone={displayZone}
+                is-compact={isCompact}
+              ></c-homepage-meeting-card>
+            </div>
+          </template>
+        </div>
+
+        <!-- Footer Action -->
+        <div class="agenda-footer">
+          <button
+            type="button"
+            class="view-all-btn"
+            onclick={handleViewAll}
+            aria-label={viewAllAriaLabel}
+          >
+            {viewAllLabel}
+          </button>
+        </div>
+      </template>
+
+      <!-- Empty State -->
+      <template lwc:else>
+        <div class="empty-state">
+          <lightning-icon
+            icon-name="utility:event"
+            size="medium"
+            class="empty-icon"
+          ></lightning-icon>
+          <p class="empty-title">{emptyTitle}</p>
+          <p class="empty-subtitle">
+            Only meetings linked to a Renewal or Growth Opportunity with status Scheduled or Rescheduling appear here.
+          </p>
+          <template lwc:if={canOpenCalendar}>
+            <button
+              type="button"
+              class="open-calendar-btn"
+              onclick={handleOpenCalendar}
+            >
+              Open calendar
+            </button>
+          </template>
+        </div>
+      </template>
+    </template>
+  </div>
+</template>

@@ -1,0 +1,279 @@
+<template>
+  <div class={calendarContainerClass}>
+    <!-- Compact Month View -->
+    <template lwc:if={isCompactView}>
+      <div class="mini-calendar">
+        <!-- Month / Year Nav Header -->
+        <div class="calendar-nav">
+          <div class="calendar-nav__month">
+            <h2 class="month-title">{currentMonthYearLabel}</h2>
+          </div>
+          <div class="calendar-nav__actions">
+            <button
+              type="button"
+              class="nav-btn"
+              aria-label="Previous month"
+              onclick={handlePrevMonth}
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              class="today-btn"
+              onclick={handleGoToToday}
+            >
+              Today
+            </button>
+            <button
+              type="button"
+              class="nav-btn"
+              aria-label="Next month"
+              onclick={handleNextMonth}
+            >
+              ›
+            </button>
+          </div>
+        </div>
+
+        <!-- Weekday Headers -->
+        <div class="weekday-row" role="row">
+          <template for:each={weekdays} for:item="day">
+            <span key={day} class="weekday-cell" role="columnheader">{day}</span>
+          </template>
+        </div>
+
+        <!-- 6-Row Date Grid -->
+        <div
+          class="days-grid"
+          role="grid"
+          aria-label="Calendar month days"
+          tabindex="0"
+          onkeydown={handleGridKeyDown}
+        >
+          <template for:each={gridDays} for:item="day">
+            <button
+              key={day.dateStr}
+              type="button"
+              class={day.cellClass}
+              role="gridcell"
+              aria-selected={day.isSelected}
+              aria-current={day.isTodayAria}
+              aria-label={day.ariaLabel}
+              data-date={day.dateStr}
+              onclick={handleDateSelect}
+            >
+              <span class="day-number">{day.dayNum}</span>
+              <template lwc:if={day.hasDots}>
+                <div class="dots-container" aria-hidden="true">
+                  <template for:each={day.dots} for:item="dot">
+                    <span key={dot} class="meeting-dot"></span>
+                  </template>
+                </div>
+              </template>
+            </button>
+          </template>
+        </div>
+
+        <!-- Selected Date Agenda Preview -->
+        <div class="selected-day-preview">
+          <div class="preview-header">
+            <span class="preview-date-label">{selectedDateDisplayLabel}</span>
+            <button
+              type="button"
+              class="expand-calendar-btn"
+              onclick={handleExpandCalendar}
+            >
+              Expand calendar
+            </button>
+          </div>
+
+          <c-homepage-meeting-agenda
+            meetings={selectedDayMeetings}
+            date-key="selected"
+            display-zone={displayZone}
+            max-visible-meetings={previewMaxMeetings}
+            completeness={completeness}
+            total-count-or-null={selectedDayMeetings.length}
+            is-compact="true"
+            onviewall={handleViewAllForSelected}
+          ></c-homepage-meeting-agenda>
+        </div>
+      </div>
+    </template>
+
+    <!-- Expanded Calendar View (inside modal) -->
+    <template lwc:else>
+      <div class="expanded-calendar">
+        <!-- Expanded Toolbar -->
+        <div class="expanded-toolbar">
+          <div class="toolbar-left">
+            <div class="view-mode-group" role="group" aria-label="Calendar view mode">
+              <button
+                type="button"
+                class={weekBtnClass}
+                data-mode="week"
+                onclick={handleModeChange}
+              >
+                Week
+              </button>
+              <button
+                type="button"
+                class={workweekBtnClass}
+                data-mode="workweek"
+                onclick={handleModeChange}
+              >
+                Workweek
+              </button>
+              <button
+                type="button"
+                class={monthBtnClass}
+                data-mode="month"
+                onclick={handleModeChange}
+              >
+                Month
+              </button>
+              <button
+                type="button"
+                class={agendaBtnClass}
+                data-mode="agenda"
+                onclick={handleModeChange}
+              >
+                Agenda
+              </button>
+            </div>
+          </div>
+
+          <div class="toolbar-center">
+            <button
+              type="button"
+              class="nav-btn"
+              aria-label="Previous period"
+              onclick={handlePrevPeriod}
+            >
+              ‹
+            </button>
+            <span class="expanded-period-title">{periodHeading}</span>
+            <button
+              type="button"
+              class="nav-btn"
+              aria-label="Next period"
+              onclick={handleNextPeriod}
+            >
+              ›
+            </button>
+            <button
+              type="button"
+              class="today-btn"
+              onclick={handleGoToToday}
+            >
+              Today
+            </button>
+          </div>
+        </div>
+
+        <!-- View Body: Agenda / Month / Week -->
+        <div class="expanded-body">
+          <template lwc:if={isExpandedAgenda}>
+            <div class="expanded-agenda-view">
+              <template for:each={agendaDateGroups} for:item="group">
+                <div key={group.dateStr} class="agenda-group">
+                  <h3 class="group-heading">{group.dateLabel}</h3>
+                  <div class="group-cards">
+                    <template for:each={group.meetings} for:item="meeting">
+                      <c-homepage-meeting-card
+                        key={meeting.key}
+                        meeting={meeting}
+                        display-zone={displayZone}
+                      ></c-homepage-meeting-card>
+                    </template>
+                  </div>
+                </div>
+              </template>
+              <template lwc:if={isAgendaEmpty}>
+                <p class="empty-agenda-text">No eligible Opportunity meetings in this range.</p>
+              </template>
+            </div>
+          </template>
+
+          <template lwc:elseif={isExpandedMonth}>
+            <div class="expanded-month-view">
+              <div class="weekday-row">
+                <template for:each={weekdays} for:item="day">
+                  <span key={day} class="weekday-cell">{day}</span>
+                </template>
+              </div>
+              <div class="expanded-month-grid">
+                <template for:each={expandedMonthDays} for:item="day">
+                  <div key={day.dateStr} class={day.cellClass} data-date={day.dateStr} onclick={handleDateSelect}>
+                    <div class="expanded-day-head">
+                      <span class="expanded-day-num">{day.dayNum}</span>
+                      <template lwc:if={day.meetingCount}>
+                        <span class="expanded-count-badge">({day.meetingCount})</span>
+                      </template>
+                    </div>
+                    <div class="expanded-day-events">
+                      <template for:each={day.previewEvents} for:item="ev">
+                        <div key={ev.key} class="expanded-event-chip" title={ev.subject}>
+                          <span class="chip-time">{ev.timeShort}</span>
+                          <span class="chip-subj">{ev.subject}</span>
+                        </div>
+                      </template>
+                      <template lwc:if={day.hasMoreEvents}>
+                        <span class="more-events-link">+{day.moreCount} more</span>
+                      </template>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+
+          <!-- Week / Workweek View -->
+          <template lwc:else>
+            <div class="expanded-week-view">
+              <div class="week-header-row">
+                <div class="time-col-header"></div>
+                <template for:each={visibleWeekDays} for:item="d">
+                  <div key={d.dateStr} class={d.headerClass}>
+                    <span class="week-day-name">{d.weekdayName}</span>
+                    <span class="week-day-num">{d.dayNum}</span>
+                  </div>
+                </template>
+              </div>
+
+              <!-- All-Day Lane -->
+              <div class="all-day-lane">
+                <div class="all-day-label">All day</div>
+                <div class="all-day-cells">
+                  <template for:each={visibleWeekDays} for:item="d">
+                    <div key={d.dateStr} class="all-day-cell">
+                      <template for:each={d.allDayEvents} for:item="ev">
+                        <div key={ev.key} class="all-day-chip" title={ev.subject}>
+                          {ev.subject}
+                        </div>
+                      </template>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <!-- Hourly Grid -->
+              <div class="week-time-grid">
+                <template for:each={hourlySlots} for:item="hour">
+                  <div key={hour.label} class="hour-row">
+                    <div class="hour-label">{hour.label}</div>
+                    <div class="hour-cells">
+                      <template for:each={visibleWeekDays} for:item="d">
+                        <div key={d.dateStr} class="hour-cell"></div>
+                      </template>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
+  </div>
+</template>

@@ -1,0 +1,240 @@
+<template>
+  <lightning-modal-header title="My Meetings">
+    <div class="modal-header-content">
+      <div class="header-left">
+        <h2 class="modal-title">My Meetings</h2>
+        <span class="modal-date-subline">{headerDateLabel} · {displayZone}</span>
+      </div>
+
+      <div class="header-right">
+        <!-- Manage Meetings Action -->
+        <template lwc:if={manageMeetingsUrl}>
+          <a
+            href={manageMeetingsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="manage-btn manage-btn_enabled"
+            aria-label="Manage Meetings dashboard (opens in new tab)"
+          >
+            Manage Meetings
+          </a>
+        </template>
+        <template lwc:else>
+          <button
+            type="button"
+            class="manage-btn manage-btn_disabled"
+            disabled
+            title="Dashboard link not configured"
+          >
+            Manage Meetings
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <!-- Tabs inside modal -->
+    <div class="modal-tabs" role="tablist">
+      <button
+        type="button"
+        class={todayTabClass}
+        role="tab"
+        aria-selected={isTodayTab}
+        data-tab="today"
+        onclick={handleTabChange}
+      >
+        Today
+      </button>
+      <button
+        type="button"
+        class={tomorrowTabClass}
+        role="tab"
+        aria-selected={isTomorrowTab}
+        data-tab="tomorrow"
+        onclick={handleTabChange}
+      >
+        Tomorrow
+      </button>
+      <button
+        type="button"
+        class={calendarTabClass}
+        role="tab"
+        aria-selected={isCalendarTab}
+        data-tab="calendar"
+        onclick={handleTabChange}
+      >
+        Calendar
+      </button>
+    </div>
+  </lightning-modal-header>
+
+  <lightning-modal-body>
+    <div class="modal-body-container">
+      <!-- Search & Controls Bar (for List / Agenda) -->
+      <template lwc:if={isListMode}>
+        <div class="table-toolbar">
+          <div class="search-box">
+            <lightning-input
+              type="search"
+              placeholder={searchPlaceholder}
+              value={searchQuery}
+              onchange={handleSearchChange}
+              variant="label-hidden"
+              class="search-input"
+            ></lightning-input>
+          </div>
+
+          <div class="table-stats">
+            <span class="count-indicator">{countIndicatorLabel}</span>
+            <template lwc:if={hasMore}>
+              <button
+                type="button"
+                class="load-more-btn"
+                onclick={handleLoadMore}
+              >
+                Load more
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <!-- Accessible Table (Desktop / Tablet) -->
+        <div class="table-responsive-container">
+          <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered meetings-table" aria-label="Meetings list">
+            <thead>
+              <tr class="slds-line-height_reset">
+                <th scope="col" class="th-sortable" onclick={handleSortByTime}>
+                  <div class="slds-truncate" title="Start Time">
+                    Start Time {sortDirectionIcon}
+                  </div>
+                </th>
+                <th scope="col">
+                  <div class="slds-truncate" title="Subject">Subject</div>
+                </th>
+                <th scope="col">
+                  <div class="slds-truncate" title="Attendees">Attendees</div>
+                </th>
+                <th scope="col">
+                  <div class="slds-truncate" title="Related To">Related To</div>
+                </th>
+                <th scope="col">
+                  <div class="slds-truncate" title="Category & Topic">Category & Topic</div>
+                </th>
+                <th scope="col" class="th-action">
+                  <div class="slds-truncate" title="Action">Action</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template for:each={filteredMeetings} for:item="m">
+                <tr key={m.key} class="slds-hint-parent">
+                  <td data-label="Start Time">
+                    <div class="time-cell">
+                      <span class="cell-time">{m.temporalState.timeDisplay}</span>
+                      <template lwc:if={m.temporalState.badgeLabel}>
+                        <span class="temporal-badge">{m.temporalState.badgeLabel}</span>
+                      </template>
+                    </div>
+                  </td>
+                  <td data-label="Subject">
+                    <div class="subject-cell">
+                      <a href={m.eventRecordUrl} class="table-link" onclick={handleRecordNavigate} data-id={m.eventId} data-object="Event">
+                        {m.subject}
+                      </a>
+                      <template lwc:if={m.isRescheduling}>
+                        <span class="status-badge_rescheduling">Rescheduling</span>
+                      </template>
+                    </div>
+                  </td>
+                  <td data-label="Attendees">
+                    <c-homepage-meeting-attendees
+                      attendees={m.attendees}
+                      primary-person={m.primaryPerson}
+                    ></c-homepage-meeting-attendees>
+                  </td>
+                  <td data-label="Related To">
+                    <template lwc:if={m.opportunity.id}>
+                      <a href={m.opptyRecordUrl} class="table-link" onclick={handleRecordNavigate} data-id={m.opportunity.id} data-object="Opportunity">
+                        {m.opportunity.name}
+                      </a>
+                    </template>
+                    <template lwc:else>
+                      <span class="text-muted">Not linked</span>
+                    </template>
+                  </td>
+                  <td data-label="Category & Topic">
+                    <div class="category-topic-cell">
+                      <div class="sub-item">
+                        <span class="sub-label">Category:</span>
+                        <span>{m.category.label}</span>
+                      </div>
+                      <div class="sub-item">
+                        <span class="sub-label">Topic:</span>
+                        <span>{m.topic.label}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td data-label="Action" class="td-action">
+                    <template lwc:if={m.impactAssessmentUrl}>
+                      <a
+                        href={m.impactAssessmentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="table-action-btn table-action-btn_enabled"
+                      >
+                        Open Impact Assessment
+                      </a>
+                    </template>
+                    <template lwc:else>
+                      <button
+                        type="button"
+                        class="table-action-btn table-action-btn_disabled"
+                        disabled
+                        title="Setup pending"
+                      >
+                        Open Impact Assessment
+                      </button>
+                    </template>
+                  </td>
+                </tr>
+              </template>
+              <template lwc:if={isTableEmpty}>
+                <tr>
+                  <td colspan="6" class="empty-table-cell">
+                    No eligible Opportunity meetings match your search.
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Narrow Width Fallback: Card List -->
+        <div class="cards-narrow-container">
+          <template for:each={filteredMeetings} for:item="m">
+            <c-homepage-meeting-card
+              key={m.key}
+              meeting={m}
+              display-zone={displayZone}
+            ></c-homepage-meeting-card>
+          </template>
+        </div>
+      </template>
+
+      <!-- Calendar Mode -->
+      <template lwc:else>
+        <c-homepage-meeting-calendar
+          meetings={meetings}
+          display-zone={displayZone}
+          is-expanded="true"
+          completeness={completeness}
+        ></c-homepage-meeting-calendar>
+      </template>
+    </div>
+  </lightning-modal-body>
+
+  <lightning-modal-footer>
+    <button type="button" class="close-footer-btn" onclick={handleClose}>
+      Close
+    </button>
+  </lightning-modal-footer>
+</template>

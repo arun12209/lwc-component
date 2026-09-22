@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Homepage My Meetings</masterLabel>
+    <description>CRM meeting reader for the Salesforce Actionable Homepage</description>
+    <targets>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__HomePage,lightning__RecordPage">
+            <property name="maxVisibleMeetings" type="Integer" default="3" min="1" max="3" label="Max Visible Meetings" description="Maximum number of meeting cards to display in compact agenda (1-3)"/>
+            <property name="manageMeetingsUrl" type="String" default="" label="Manage Meetings Dashboard URL" description="URL to open when clicking Manage Meetings"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

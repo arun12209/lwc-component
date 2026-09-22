@@ -1,0 +1,229 @@
+.modal-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--hp-text, #16325c);
+  margin: 0;
+}
+
+.modal-date-subline {
+  font-size: 0.8125rem;
+  color: var(--hp-text-muted, #5c6b82);
+}
+
+.manage-btn {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.25rem;
+}
+
+.manage-btn_enabled {
+  color: var(--hp-brand, #0176d3);
+  border: 1px solid var(--hp-brand, #0176d3);
+}
+
+.manage-btn_disabled {
+  background: var(--hp-surface-alt, #f3f5f9);
+  color: var(--hp-text-subtle, #97a0b0);
+  border: 1px solid var(--hp-border, #e3e8f0);
+  cursor: not-allowed;
+}
+
+.modal-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--hp-border, #e3e8f0);
+  margin-top: 0.75rem;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--hp-text-muted, #5c6b82);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.tab-btn:hover {
+  color: var(--hp-text, #16325c);
+}
+
+.tab-btn_active {
+  color: var(--hp-brand, #0176d3);
+  border-bottom-color: var(--hp-brand, #0176d3);
+}
+
+.modal-body-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 20rem;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 20rem;
+}
+
+.table-stats {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.count-indicator {
+  font-size: 0.8125rem;
+  color: var(--hp-text-muted, #5c6b82);
+}
+
+.load-more-btn {
+  background: var(--hp-surface-alt, #f3f5f9);
+  border: 1px solid var(--hp-border, #e3e8f0);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--hp-brand, #0176d3);
+  cursor: pointer;
+}
+
+.table-responsive-container {
+  overflow-x: auto;
+  border: 1px solid var(--hp-border, #e3e8f0);
+  border-radius: 0.375rem;
+}
+
+.meetings-table {
+  width: 100%;
+  font-size: 0.8125rem;
+}
+
+.th-sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.time-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.cell-time {
+  font-weight: 600;
+  color: var(--hp-text, #16325c);
+}
+
+.subject-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.table-link {
+  color: var(--hp-brand, #0176d3);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.table-link:hover {
+  text-decoration: underline;
+}
+
+.category-topic-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.sub-item {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.sub-label {
+  color: var(--hp-text-muted, #5c6b82);
+}
+
+.table-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.table-action-btn_enabled {
+  background: transparent;
+  color: var(--hp-brand, #0176d3);
+  border: 1px solid var(--hp-brand, #0176d3);
+}
+
+.table-action-btn_enabled:hover {
+  background: var(--hp-brand, #0176d3);
+  color: #ffffff;
+}
+
+.table-action-btn_disabled {
+  background: var(--hp-surface-alt, #f3f5f9);
+  color: var(--hp-text-subtle, #97a0b0);
+  border: 1px solid var(--hp-border, #e3e8f0);
+  cursor: not-allowed;
+}
+
+.empty-table-cell {
+  text-align: center;
+  padding: 2rem !important;
+  color: var(--hp-text-muted, #5c6b82);
+  font-style: italic;
+}
+
+.cards-narrow-container {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.close-footer-btn {
+  background: var(--hp-surface-alt, #f3f5f9);
+  border: 1px solid var(--hp-border, #e3e8f0);
+  border-radius: 0.25rem;
+  padding: 0.375rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .table-responsive-container {
+    display: none;
+  }
+  .cards-narrow-container {
+    display: flex;
+  }
+}
